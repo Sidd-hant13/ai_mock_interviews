@@ -81,10 +81,12 @@ const Agent = ({ userName, userId, type, interviewId, questions }: AgentProps) =
   const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);
     if (type === "generate"){
-      await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
+      let starterQuestions = `- Start the conversation with a short greeting and confirm my name if available.
+- Guide me to specify the job role, experience level, and key tech stack for the interview, one at a time.
+- After collecting details, politely say you'll generate the interview and end the call.`;
+      await vapi.start(interviewer, {
         variableValues:{
-          username: userName,
-          userid: userId,
+          questions: starterQuestions
         }
       });
     } else {
