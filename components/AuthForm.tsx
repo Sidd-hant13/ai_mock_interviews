@@ -65,7 +65,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
         }
         await signIn({ email, idToken });
         toast.success("Signed in successfully");
-        router.push("/");
+        router.push("/home");
       }
     } catch (error) {
       console.log(error);
