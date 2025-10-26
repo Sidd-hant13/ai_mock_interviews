@@ -54,16 +54,33 @@ const Agent = ({ userName, userId, type, interviewId, questions }: AgentProps) =
   }, []);
 
   const handleGenerateFeedback = async (messages: SavedMessage[]) => {
-    console.log("Generate feedback here...")
-    const { success, id } = {
-      success: true,
-      id: 'feedback-id'
-    }
-    // TODO: Create a server action that generates feedback
-    if (success && id){
-      router.push(`/interview/${interviewId}/feedback`);
-    } else {
-      console.log("Error saving feedbacks")
+    try {
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          interviewId: interviewId!,
+          userId: userId!,
+          transcript: messages,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorBody = await res.text();
+        console.error('Feedback API request failed:', res.status, errorBody);
+        router.push('/');
+        return;
+      }
+
+      const data = await res.json();
+      if (data?.success && data?.feedbackId) {
+        router.push(`/interview/${interviewId}/feedback`);
+      } else {
+        console.error('Error saving feedbacks: API returned success:false', data);
+        router.push('/');
+      }
+    } catch (e) {
+      console.error('Error saving feedbacks:', e);
       router.push('/');
     }
   }

@@ -13,12 +13,14 @@ import {
 
 const page = async () => {
   const user = await getCurrentUser();
-  const [userInterviews, latestInterviews] = await Promise.all([
-    await getInterviewsByUserId(user?.id!),
-    await getLatestInterviews({ userId: user?.id! })
+  const [userInterviewsRaw, latestInterviewsRaw] = await Promise.all([
+    getInterviewsByUserId(user?.id!),
+    getLatestInterviews({ userId: user?.id! })
   ]);
-  const hasPastInterviews = userInterviews?.length > 0;
-  const hasUpcomingInterviews = latestInterviews?.length > 0;
+  const userInterviews = userInterviewsRaw ?? [];
+  const latestInterviews = latestInterviewsRaw ?? [];
+  const hasPastInterviews = userInterviews.length > 0;
+  const hasUpcomingInterviews = latestInterviews.length > 0;
   return (
     <>
       <section className="card-cta">
@@ -43,7 +45,7 @@ const page = async () => {
         <h2>Your Interviews</h2>
         <div className="interviews-section">
           {hasPastInterviews ? (
-            userInterviews?.map((interview) => (
+            userInterviews.map((interview) => (
               <InterviewCard {...interview} key={interview.id} />
             ))
           ) : (
@@ -55,7 +57,7 @@ const page = async () => {
         <h2>Take an Interview</h2>
         <div className="interviews-section">
           {hasUpcomingInterviews ? (
-            latestInterviews?.map((interview) => (
+            latestInterviews.map((interview) => (
               <InterviewCard {...interview} key={interview.id} />
             ))
           ) : (
